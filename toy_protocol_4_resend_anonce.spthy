@@ -28,7 +28,7 @@ rule ASendNonceAgain [color=#ffdea6]:
     , Out(~ANonce) ]
 
 rule AReceiveNonceInstallKey [color=#ffdea6]:
-    let 
+    let
         SK = kdf(~MK, ~ANonce, BNonce)
     in
     [ AState(~aID, 'SENT_NONCE', <~MK, ~ANonce>)
@@ -59,8 +59,8 @@ rule BReceiveAckInstallKey [color=#b5f5f7]:
 // BEGIN Statements
 
 lemma a_must_send_initial_nonce [reuse,use_induction]:
-    "All aID MK ANonce #i. 
-        ASendsNonceAgain(aID, MK, ANonce) @ i 
+    "All aID MK ANonce #i.
+        ASendsNonceAgain(aID, MK, ANonce) @ i
             ==> Ex #j. ASendsNonce(aID, MK, ANonce) @ j & j < i"
 
 lemma successful_run: exists-trace
@@ -69,18 +69,18 @@ lemma successful_run: exists-trace
         BInstallsKey(aID, MK, ANonce, BNonce, SK) @ j"
 
 lemma sk_secret_a:
-    "All aID MK ANonce BNonce SK #i. 
-        AInstallsKey(aID, MK, ANonce, BNonce, SK) @ i 
+    "All aID MK ANonce BNonce SK #i.
+        AInstallsKey(aID, MK, ANonce, BNonce, SK) @ i
             ==> not(Ex #j. K(SK) @ j)"
 
 lemma sk_secret_b:
-    "All bID MK ANonce BNonce SK #i. 
-        BInstallsKey(bID, MK, ANonce, BNonce, SK) @ i 
+    "All bID MK ANonce BNonce SK #i.
+        BInstallsKey(bID, MK, ANonce, BNonce, SK) @ i
             ==> not(Ex #j. K(SK) @ j)"
 
 lemma if_b_finishes_a_has_finished_too:
     "All bID MK ANonce BNonce SK #i.
-        BInstallsKey(bID, MK, ANonce, BNonce, SK) @ i 
+        BInstallsKey(bID, MK, ANonce, BNonce, SK) @ i
             ==> (Ex aID #j. AInstallsKey(aID, MK, ANonce, BNonce, SK) @ j
                  & j < i)"
 

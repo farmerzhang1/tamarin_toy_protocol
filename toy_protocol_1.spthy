@@ -22,7 +22,7 @@ rule ASendNonce [color=#ffdea6]:
     , Out(~ANonce) ]
 
 rule AReceiveNonceInstallKey [color=#ffdea6]:
-    let 
+    let
         SK = KDF(~ANonce, BNonce)
     in
     [ AState(~aID, 'SENT_NONCE', ~ANonce)
@@ -58,13 +58,13 @@ lemma successful_run: exists-trace
         BInstallsKey(aID, ANonce, BNonce, SK) @ j"
 
 lemma sk_secret_a:
-    "All aID ANonce BNonce SK #i. 
-        AInstallsKey(aID, ANonce, BNonce, SK) @ i 
+    "All aID ANonce BNonce SK #i.
+        AInstallsKey(aID, ANonce, BNonce, SK) @ i
             ==> not(Ex #j. K(SK) @ j)"
 
 lemma sk_secret_b:
-    "All bID ANonce BNonce SK #i. 
-        BInstallsKey(bID, ANonce, BNonce, SK) @ i 
+    "All bID ANonce BNonce SK #i.
+        BInstallsKey(bID, ANonce, BNonce, SK) @ i
             ==> not(Ex #j. K(SK) @ j)"
 
 // END Statements
