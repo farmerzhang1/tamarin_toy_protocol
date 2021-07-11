@@ -1,5 +1,12 @@
 theory FirstExample
 begin
+
+/*
+what we want:
+C -> S: aenc(k, pkS) 客户给服务器发送一个
+C <- S: h(k)
+*/
+
 builtins: hashing, asymmetric-encryption
 
 // Registering a public key
@@ -21,6 +28,7 @@ rule Reveal_ltk:
 
 // Start a new thread executing the client role, choosing the server
 // non-deterministically.
+// 发送消息
 rule Client_1:
     [ Fr(~k)         // choose fresh key
     , !Pk($S, pkS)   // lookup public-key of server
@@ -29,7 +37,7 @@ rule Client_1:
     [ Client_1( $S, ~k )    // Store server and key for next step of thread
     , Out( aenc(~k, pkS) )  // Send the encrypted session key to the server
     ]
-
+// 接收 hash 值
 rule Client_2:
     [ Client_1(S, k)   // Retrieve server and session key from previous step
     , In( h(k) )       // Receive hashed session key from network
@@ -47,7 +55,7 @@ rule Serv_1:
     [ Out( h(adec(request, ~ltkS)) ) ]            // Return the hash of the
                                                   // decrypted request.
 
-
+// #i denotes i:temporal
 lemma Client_session_key_secrecy:
   " /* It cannot be that a  */
     not(
@@ -69,7 +77,7 @@ lemma Client_auth:
        ( (Ex #a. AnswerRequest(S, k) @ a)
          /* or the adversary performed a long-term key reveal on 'S'
             before the key was setup. */
-       | (Ex #r. LtkReveal(S) @ r & r < i)
+       | (Ex #r. LtkReveal(S) @ r & r < i) // !! r < i! 所以 这是时间 (temporal
        )
     )
   "
